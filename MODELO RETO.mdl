@@ -1,0 +1,281 @@
+{UTF-8}
+"# Capacidad descarga CAT" = WITH LOOKUP (
+	Productos en CAT/Capacidad Almacen,
+		 ([(0,0)-(10,10)],(0,100),(20,95),(40,90),(60,80),(80,50),(90,30),(100,15) ))
+	~	tarimas/day
+	~		|
+
+Capacidad Almacen=
+	2000
+	~	
+	~		|
+
+Capacidad de Descarga por Socio = WITH LOOKUP (
+	tasa de habilidad,
+		 ([(0,0)-(10,10)],(0,105),(20,120),(40,135),(60,150),(80,170),(100,180) ))
+	~	
+	~		|
+
+Nuevos Pedidos=
+	IF THEN ELSE(Necesidad de tiendas-Inventario CAT>=0,(Necesidad de tiendas-Inventario CAT\
+		) * Tiempo de Envio, 0)
+	~	
+	~		|
+
+Consumo=
+	Productos en Tienda*Ventas Estacionales
+	~	
+	~		|
+
+Demanda No Satisfecha=
+	Consumo-Productos en Tienda
+	~	
+	~		|
+
+Productos Cargados=
+	MIN("# Capacidad descarga CAT", MIN(Eficiencia Total descarga socios, Tarimas Disponibles\
+		))
+	~	
+	~		|
+
+tasa de habilidad=
+	0.7
+	~	
+	~		|
+
+Productos en CAT= INTEG (
+	MAX(MIN(Productos Descargados-Productos Cargados, Capacidad Almacen), 0),
+		1000)
+	~	
+	~		|
+
+Tiempo de Envio = WITH LOOKUP (
+	Trafico,
+		([(2.84407,0)-(3.51634,3.57208)],(0,0.0001),(2,0.3),(4,0.8),(6,1.3)))
+	~	
+	~		|
+
+Trafico=
+	1
+	~	
+	~		|
+
+Ventas Estacionales = WITH LOOKUP (
+	Tasa de Ventas,
+		([(0,0)-(10,10)],(1,500),(2,500),(3,600),(4,600),(5,1000),(6,1000),(7,1500),(8,600)\
+		,(9,600),(10,600),(11,1500),(12,3000)))
+	~	
+	~		|
+
+Tarimas Disponibles=
+	100*20
+	~	
+	~	(Camiones de salida)
+	|
+
+Inventario CAT=
+	Productos en CAT
+	~	
+	~		|
+
+Necesidad de tiendas=
+	Demanda No Satisfecha
+	~	
+	~		|
+
+Productos en Tienda= INTEG (
+	MAX(Productos Cargados-Consumo,0),
+		1000)
+	~	
+	~		|
+
+Tasa de Ventas=
+	0.7
+	~	
+	~		|
+
+Productos en Espera= INTEG (
+	Nuevos Pedidos+Productos Descargados,
+		1000)
+	~	productos
+	~		|
+
+Eficiencia Total descarga socios=
+	Capacidad de Descarga por Socio*Numero de socios que descargan
+	~	
+	~		|
+
+Capacidad por Camion=
+	20
+	~	tarimas/camion
+	~		|
+
+Numero de Camiones que Llegan=
+	(Productos en Espera/Capacidad por Camion)*Tasa de Disrupcion
+	~	camiones
+	~		|
+
+Numero de socios que descargan=
+	50
+	~	socios
+	~	socios de todo el CAT que estan descargando (Por 2 turnos)
+	|
+
+Productos Descargados=
+	MIN("# Capacidad descarga CAT", MIN(Eficiencia Total descarga socios, Numero de Camiones que Llegan\
+		) )
+	~	
+	~		|
+
+Tasa de Disrupcion=
+	1
+	~	
+	~	a ver que pedo
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 100
+	~	Month
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Month
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP 
+	~	Month [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 0.25
+	~	Month [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Courier|12||0-0-0|0-0-0|0-0-255|-1--1--1|255-255-255|96,96,67,0
+10,1,Productos en Espera,939,342,63,18,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+12,2,48,704,332,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,3,5,1,4,0,0,22,0,0,0,-1--1--1,,1|(836,332)|
+1,4,5,2,100,0,0,22,0,0,0,-1--1--1,,1|(749,332)|
+11,5,0,790,332,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,6,Nuevos Pedidos,790,356,34,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,7,Necesidad de tiendas,666,463,57,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,8,Inventario CAT,820,456,48,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,9,8,6,1,0,0,0,0,64,0,-1--1--1,,1|(825,398)|
+1,10,7,6,1,0,0,0,0,64,0,-1--1--1,,1|(682,381)|
+10,11,Productos en CAT,1247,341,51,18,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,12,14,11,4,0,0,22,0,0,0,-1--1--1,,1|(1150,341)|
+1,13,14,1,100,0,0,22,0,0,0,-1--1--1,,1|(1047,341)|
+11,14,0,1099,341,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,15,Productos Descargados,1099,365,53,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,16,Productos en Tienda,1573,341,59,20,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,17,19,16,4,0,0,22,0,0,0,-1--1--1,,1|(1463,341)|
+1,18,19,11,100,0,0,22,0,0,0,-1--1--1,,1|(1349,341)|
+11,19,0,1406,341,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,20,Productos Cargados,1406,365,43,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,21,"# Capacidad descarga CAT",1337,416,57,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,22,Numero de Camiones que Llegan,1118,462,57,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,23,Capacidad por Camion,1254,478,48,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,24,23,22,1,0,0,0,0,64,0,-1--1--1,,1|(1183,468)|
+1,25,1,22,1,0,0,0,0,64,0,-1--1--1,,1|(925,550)|
+10,26,Eficiencia Total descarga socios,1061,268,67,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,27,Numero de socios que descargan,906,196,48,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,28,Capacidad de Descarga por Socio,1115,161,85,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,29,27,26,1,0,0,0,0,64,0,-1--1--1,,1|(990,226)|
+1,30,28,26,1,0,0,0,0,64,0,-1--1--1,,1|(1073,218)|
+1,31,26,15,1,0,0,0,0,64,0,-1--1--1,,1|(1068,309)|
+1,32,11,8,1,0,0,0,0,64,0,-1--1--1,,1|(1286,609)|
+10,33,Demanda No Satisfecha,1535,461,48,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,34,16,33,1,0,0,0,0,64,0,-1--1--1,,1|(1563,403)|
+1,35,33,7,1,0,0,0,0,64,0,-1--1--1,,1|(886,770)|
+1,36,21,15,1,0,0,0,0,64,0,-1--1--1,,1|(1203,438)|
+1,37,22,15,1,0,0,0,0,64,0,-1--1--1,,1|(1121,398)|
+10,38,Tasa de Disrupcion,1158,596,48,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,39,38,22,1,0,0,0,0,64,0,-1--1--1,,1|(1164,518)|
+12,40,0,240,699,67,16,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+capacidad de almacenamiento
+10,41,Tarimas Disponibles,1553,199,57,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,42,41,20,1,0,0,0,0,64,0,-1--1--1,,1|(1422,252)|
+12,43,0,462,741,70,15,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+ADD DISRUPTION TO LOADING / UNLOADING PROCESS
+12,44,48,1792,338,10,8,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,45,47,44,4,0,0,22,0,0,0,-1--1--1,,1|(1750,338)|
+1,46,47,16,100,0,0,22,0,0,0,-1--1--1,,1|(1669,338)|
+11,47,0,1712,338,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,48,Consumo,1712,355,34,9,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,49,Tasa de Ventas,1982,180,34,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,50,16,47,1,0,0,0,0,64,0,-1--1--1,,1|(1633,277)|
+12,51,0,466,680,80,40,8,7,0,0,-1,0,0,0,0,0,0,0,0,0
+ADD DELAY TO PRODUCT PIPELINE
+10,52,Tiempo de Envio,442,212,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,53,52,5,1,0,0,0,0,192,0,-1--1--1,,1|(650,230)|
+10,54,Trafico,257,388,47,15,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,55,54,52,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,56,Ventas Estacionales,1751,228,56,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,57,56,47,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,58,49,56,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,59,47,33,1,0,0,0,0,192,0,-1--1--1,,1|(1730,470)|
+10,60,tasa de habilidad,1274,90,59,20,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,61,60,28,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,62,Capacidad Almacen,1407,582,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,63,11,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,64,62,21,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,65,62,11,1,0,0,0,0,192,0,-1--1--1,,1|(1403,406)|
+1,66,26,19,1,0,0,0,0,192,0,-1--1--1,,1|(1283,269)|
+1,67,21,20,1,0,0,0,0,192,0,-1--1--1,,1|(1467,451)|
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 2
+$192-192-192,0,Vensim Sans|12||0-0-0|0-0-0|0-0-255|-1--1--1|255-255-255|96,96,100,0
+///---\\\
+:L<%^E!@
+1:current.vdfx
+4:Time
+5:Productos en CAT
+9:current
+19:67,0
+24:0
+25:100
+26:100
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:1
+72:0
+73:0
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:2
+41:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Courier|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
