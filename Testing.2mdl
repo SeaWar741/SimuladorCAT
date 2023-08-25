@@ -18,8 +18,8 @@ Demanda estacional = WITH LOOKUP (
 	~		|
 
 Demanda no satisfecha=
-	IF THEN ELSE( Productos en Tienda-Productos consumidos>0 , Productos en Tienda-Productos consumidos\
-		 , Productos consumidos)
+	IF THEN ELSE(Productos en Tienda-Demanda estacional<0, ABS(Productos en Tienda-Demanda estacional\
+		) , 0 )
 	~	
 	~		|
 
@@ -30,15 +30,16 @@ Flujo vehicular = WITH LOOKUP (
 	~	
 	~		|
 
-Movimientos promedio por turno=
-	135
+Movimientos promedio por mes=
+	135*2*30
 	~	
 	~		|
 
+Nuevos pedidos  = A FUNCTION OF( Demanda no satisfecha,Flujo vehicular) ~~|
 Nuevos pedidos=
 	IF THEN ELSE( Demanda no satisfecha*Flujo vehicular >=0 , Demanda no satisfecha*Flujo vehicular\
 		 , Demanda no satisfecha
-	 )
+)
 	~	
 	~		|
 
@@ -53,18 +54,18 @@ Numero de socios=
 	~		|
 
 Productos cargados=
-	Numero de socios*Movimientos promedio por turno
+	Numero de socios*Movimientos promedio por mes
 	~	
 	~		|
 
 Productos consumidos=
-	IF THEN ELSE(Productos en Tienda-Demanda estacional>=0, Productos en Tienda-Demanda estacional\
-		 , Productos en Tienda)
+	IF THEN ELSE(Productos en Tienda>Demanda estacional,Demanda estacional,Productos en Tienda\
+		)
 	~	
 	~		|
 
 Productos descargados=
-	((Numero de andenes*Capacidad promedio por camion)/Numero de socios)*Movimientos promedio por turno
+	((Numero de andenes*Capacidad promedio por camion)/Numero de socios)*Movimientos promedio por mes
 	~	
 	~		|
 
@@ -146,12 +147,12 @@ $192-192-192,0,Courier|12||0-0-0|0-0-0|0-0-255|-1--1--1|255-255-255|96,96,100,0
 1,29,30,14,100,0,0,22,0,0,0,-1--1--1,,1|(1056,400)|
 11,30,0,1101,400,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
 10,31,Productos consumidos,1101,424,48,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
-10,32,Numero de socios,450,242,43,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
-1,33,32,12,1,0,0,0,0,64,0,-1--1--1,,1|(499,310)|
-10,34,Tasa de rotacion de personal,332,138,53,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
-1,35,34,32,1,0,0,0,0,64,0,-1--1--1,,1|(425,185)|
-1,36,32,18,1,0,0,0,0,64,0,-1--1--1,,1|(738,332)|
-10,37,Capacidad de tarimas,609,109,57,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,32,Numero de socios,506,86,43,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,33,32,12,1,0,0,0,0,64,0,-1--1--1,,1|(456,225)|
+10,34,Tasa de rotacion de personal,302,64,53,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,35,34,32,1,0,0,0,0,64,0,-1--1--1,,1|(443,70)|
+1,36,32,18,1,0,0,0,0,64,0,-1--1--1,,1|(825,245)|
+10,37,Capacidad de tarimas,621,337,57,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
 10,39,Numero de andenes,365,550,62,18,8,131,0,0,0,0,0,0,0,0,0,0,0,0
 1,40,39,12,1,0,0,0,0,64,0,-1--1--1,,1|(472,491)|
 10,41,Capacidad promedio por camion,535,556,57,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
@@ -164,22 +165,22 @@ $192-192-192,0,Courier|12||0-0-0|0-0-0|0-0-255|-1--1--1|255-255-255|96,96,100,0
 1,49,47,45,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 1,50,45,30,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 1,51,14,30,1,0,0,0,0,64,0,-1--1--1,,1|(955,316)|
-10,52,Movimientos promedio por turno,797,226,87,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
-1,53,52,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,54,52,12,1,0,0,0,0,64,0,-1--1--1,,1|(691,280)|
+10,52,Movimientos promedio por mes,570,202,87,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,53,52,18,1,0,0,0,0,64,0,-1--1--1,,1|(703,257)|
+1,54,52,12,1,0,0,0,0,64,0,-1--1--1,,1|(544,268)|
 10,55,Demanda no satisfecha,915,556,85,20,8,131,0,0,0,0,0,0,0,0,0,0,0,0
-1,56,14,55,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
-1,57,31,55,1,0,0,0,0,64,0,-1--1--1,,1|(1038,484)|
 10,59,Flujo vehicular,107,242,60,23,8,131,0,0,0,0,0,0,0,0,0,0,0,0
 10,60,Time,39,204,29,9,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
 1,61,60,59,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 1,62,59,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 1,65,55,7,1,0,0,0,0,64,0,-1--1--1,,1|(451,671)|
+1,66,45,55,1,0,0,0,0,64,0,-1--1--1,,1|(1256,325)|
+1,67,14,55,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
 ///---\\\
 :L<%^E!@
 1:Testing.vdfx
 4:Time
-5:Productos en espera
+5:Nuevos pedidos
 9:Testing
 19:100,0
 24:0
