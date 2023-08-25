@@ -1,0 +1,218 @@
+{UTF-8}
+Capacidad de tarimas=
+	10000
+	~	
+	~		|
+
+Capacidad promedio por camion=
+	20
+	~	
+	~	En Tarimas
+	|
+
+Demanda estacional = WITH LOOKUP (
+	Time,
+		 ([(0,0)-(12,5000)],(1,4000),(2,2000),(3,1500),(4,4000),(5,2400),(5,3500),(6,3500),\
+		(7,3400),(8,4000),(9,4200),(10,3000),(11,5000),(12,5000) ))
+	~	
+	~		|
+
+Demanda no satisfecha=
+	IF THEN ELSE( Productos en Tienda-Productos consumidos>0 , Productos en Tienda-Productos consumidos\
+		 , Productos consumidos)
+	~	
+	~		|
+
+Flujo vehicular = WITH LOOKUP (
+	Time,
+		 ([(0,0)-(12,1.3)],(1,1),(2,0.7),(3,0.8),(4,0.8),(5,0.9),(6,0.7),(7,0.8),(8,0.7),(9\
+		,0.7),(10,0.5),(11,0.5),(12,0.2) ))
+	~	
+	~		|
+
+Movimientos promedio por turno=
+	135
+	~	
+	~		|
+
+Nuevos pedidos=
+	IF THEN ELSE( Demanda no satisfecha*Flujo vehicular >=0 , Demanda no satisfecha*Flujo vehicular\
+		 , Demanda no satisfecha
+	 )
+	~	
+	~		|
+
+Numero de andenes=
+	64
+	~	
+	~		|
+
+Numero de socios=
+	100*Tasa de rotacion de personal*-1+100
+	~	
+	~		|
+
+Productos cargados=
+	Numero de socios*Movimientos promedio por turno
+	~	
+	~		|
+
+Productos consumidos=
+	IF THEN ELSE(Productos en Tienda-Demanda estacional>=0, Productos en Tienda-Demanda estacional\
+		 , Productos en Tienda)
+	~	
+	~		|
+
+Productos descargados=
+	((Numero de andenes*Capacidad promedio por camion)/Numero de socios)*Movimientos promedio por turno
+	~	
+	~		|
+
+Productos en CAT= INTEG (
+	IF THEN ELSE( (Productos descargados-Productos cargados)<=Capacidad de tarimas , Productos descargados\
+		-Productos cargados , Capacidad de tarimas ),
+		Capacidad de tarimas)
+	~	
+	~		|
+
+Productos en espera= INTEG (
+	Nuevos pedidos-Productos descargados,
+		10000)
+	~	
+	~		|
+
+Productos en Tienda= INTEG (
+	Productos cargados-Productos consumidos,
+		0)
+	~	
+	~		|
+
+Tasa de rotacion de personal = WITH LOOKUP (
+	Time,
+		 ([(0.9,0)-(12,1.5)],(1,0.1),(2,0.3),(3,0.2),(4,0.1),(5,0.1),(6,0.3),(7,0.2),(8,0.1\
+		),(9,0.2),(10,0.1),(11,0.1),(12,0.0001) ))
+	~	
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 12
+	~	Month
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Month
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP 
+	~	Month [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 1
+	~	Month [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Courier|12||0-0-0|0-0-0|0-0-255|-1--1--1|255-255-255|96,96,100,0
+10,1,Productos en espera,332,395,89,14,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+12,2,48,76,394,0,0,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,4,6,1,4,0,0,22,0,0,0,-1--1--1,,1|(204,394)|
+1,5,6,2,100,0,0,22,0,0,0,-1--1--1,,1|(76,394)|
+11,6,0,159,394,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,7,Nuevos pedidos,159,418,34,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,8,Productos en CAT,647,397,67,16,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,10,12,8,4,0,0,22,0,0,0,-1--1--1,,1|(543,395)|
+1,11,12,1,100,0,0,22,0,0,0,-1--1--1,,1|(457,395)|
+11,12,0,500,395,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,13,Productos descargados,500,419,53,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,14,Productos en Tienda,939,398,78,22,3,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,16,18,14,4,0,0,22,0,0,0,-1--1--1,,1|(827,397)|
+1,17,18,8,100,0,0,22,0,0,0,-1--1--1,,1|(747,397)|
+11,18,0,787,397,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,19,Productos cargados,787,421,43,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+12,26,48,1185,400,0,0,0,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,28,30,26,4,0,0,22,0,0,0,-1--1--1,,1|(1101,400)|
+1,29,30,14,100,0,0,22,0,0,0,-1--1--1,,1|(1056,400)|
+11,30,0,1101,400,6,8,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,31,Productos consumidos,1101,424,48,16,40,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,32,Numero de socios,450,242,43,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,33,32,12,1,0,0,0,0,64,0,-1--1--1,,1|(499,310)|
+10,34,Tasa de rotacion de personal,332,138,53,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,35,34,32,1,0,0,0,0,64,0,-1--1--1,,1|(425,185)|
+1,36,32,18,1,0,0,0,0,64,0,-1--1--1,,1|(738,332)|
+10,37,Capacidad de tarimas,609,109,57,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,39,Numero de andenes,365,550,62,18,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,40,39,12,1,0,0,0,0,64,0,-1--1--1,,1|(472,491)|
+10,41,Capacidad promedio por camion,535,556,57,24,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,42,41,12,1,0,0,0,0,64,0,-1--1--1,,1|(506,476)|
+1,44,37,8,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,45,Demanda estacional,1166,242,48,16,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,46,Time,225,118,29,9,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,47,Time,1213,184,29,9,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,48,46,34,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,49,47,45,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,50,45,30,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,51,14,30,1,0,0,0,0,64,0,-1--1--1,,1|(955,316)|
+10,52,Movimientos promedio por turno,797,226,87,27,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,53,52,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,54,52,12,1,0,0,0,0,64,0,-1--1--1,,1|(691,280)|
+10,55,Demanda no satisfecha,915,556,85,20,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,56,14,55,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,57,31,55,1,0,0,0,0,64,0,-1--1--1,,1|(1038,484)|
+10,59,Flujo vehicular,107,242,60,23,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+10,60,Time,39,204,29,9,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,61,60,59,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,62,59,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,65,55,7,1,0,0,0,0,64,0,-1--1--1,,1|(451,671)|
+///---\\\
+:L<%^E!@
+1:Testing.vdfx
+4:Time
+5:Productos en espera
+9:Testing
+19:100,0
+24:0
+25:12
+26:12
+23:0
+15:0,0,0,0,0,0
+27:0,
+34:0,
+42:1
+72:0
+73:0
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:2
+41:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Courier|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1
