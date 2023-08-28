@@ -1,7 +1,6 @@
 {UTF-8}
 Productos a staging=
-	DELAY FIXED(IF THEN ELSE( Productos en Espera-Eficiencia Empleados>0, Productos en Espera\
-		-Eficiencia Empleados ,Eficiencia Empleados), 1/30 , 0 )
+	DELAY FIXED(MIN(Productos en Espera,Eficiencia Empleados), 1/30 , 0 )
 	~	
 	~		|
 
@@ -51,7 +50,7 @@ area staging=
 	~		|
 
 Productos en Espera= INTEG (
-	MAX(Productos Ordenados-Productos a staging,0),
+	Productos Ordenados-Productos a staging,
 		24*64*30*2)
 	~	
 	~	Toneladas
@@ -197,7 +196,7 @@ $192-192-192,0,Vensim Sans|12||0-0-0|0-0-0|0-0-255|-1--1--1|255-255-255|96,96,10
 :L<%^E!@
 1:Current.vdfx
 4:Time
-5:Empleados
+5:Productos a staging
 9:Current
 19:84,0
 24:0
